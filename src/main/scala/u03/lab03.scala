@@ -31,7 +31,7 @@ object lab03:
       @annotation.tailrec
       def _flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B])(acc: Sequence[B]): Sequence[B] = l match
         case Cons(h, t) => _flatMap(t)(mapper)(concat(acc, mapper(h)))
-        case _ => acc
+        case _          => acc
       _flatMap(l)(mapper)(Nil())
 
     // TASK 1.E
@@ -58,13 +58,13 @@ object lab03:
 
     def getCourses(p: Sequence[Person]): Sequence[String] = p match
         case Cons(Teacher(name, course), t) => Cons(course, getCourses(t))
-        case Cons(Student(_, _), t) => getCourses(t)
+        case Cons(Student(_, _), t)         => getCourses(t)
         case _ => Nil()
         
     def getCoursesFilterWithMap(p: Sequence[Person]): Sequence[String] =
         val prof = Sequence.filter(p)(_ match
-            case Person.Teacher(_,_) => true
-            case _ => false
+            case Person.Teacher(_,_)    => true
+            case _                      => false
         )
         Sequence.map(prof)(v => v match 
             case Person.Teacher(n,c) => c
@@ -73,12 +73,12 @@ object lab03:
     // TASK 4
     @annotation.tailrec
     def foldLeft[A, B](l: Sequence[A])(acc: B)(f: (B, A) => B): B = l match
-      case Cons(h, t) => foldLeft(t)(f(acc, h))(f)
-      case _ => acc
+      case Cons(h, t)   => foldLeft(t)(f(acc, h))(f)
+      case _            => acc
 
     def foldRight[A, B](l: Sequence[A])(acc: B)(f: (A, B) => B): B = l match
-      case Cons(h, t) => f(h, foldRight(t)(acc)(f))
-      case _ => acc
+      case Cons(h, t)   => f(h, foldRight(t)(acc)(f))
+      case _            => acc
 
     // TASK 5
     // NON PRESENTE
@@ -93,8 +93,8 @@ object lab03:
 
     // // TASK 7
     def fill[A](n: Int)(v: A): Stream[A] = n match
-      case _ if n > 0 => cons(v, fill(n-1)(v))
-      case _ => empty()
+      case _ if n > 0   => cons(v, fill(n-1)(v))
+      case _            => empty()
       
     // TASK 8
     def pell(): Stream[Int] = 

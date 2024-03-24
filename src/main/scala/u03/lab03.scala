@@ -1,34 +1,15 @@
 package u03
 
-import u02.AnonymousFunctions.l
+import u03.Sequences.Sequence
+import u03.Sequences.Sequence.*
 import u03.Optionals.Optional
-import scala.annotation.tailrec
+import u03.Streams.Stream
+import u03.Streams.Stream.*
 import _root_.lab03.People.Person
 import _root_.lab03.People.Person.*
 
-object Sequences: // Essentially, generic linkedlists
-  
-  enum Sequence[E]:
-    case Cons(head: E, tail: Sequence[E])
-    case Nil()
-
-  object Sequence:
-
-    def sum(l: Sequence[Int]): Int = l match
-      case Cons(h, t) => h + sum(t)
-      case _          => 0
-
-    def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
-      case Cons(h, t) => Cons(mapper(h), map(t)(mapper))
-      case Nil()      => Nil()
-
-    def filter[A](l1: Sequence[A])(pred: A => Boolean): Sequence[A] = l1 match
-      case Cons(h, t) if pred(h) => Cons(h, filter(t)(pred))
-      case Cons(_, t)            => filter(t)(pred)
-      case Nil()                 => Nil()
-
-    ///// INIZIO LAB 03
-
+object lab03:
+    
     // TASK 1.A
     def take[A](l: Sequence[A])(n: Int): Sequence[A] = l match
       case Cons(h, t) if n > 0 => Cons(h, take(t)(n-1))
@@ -81,11 +62,11 @@ object Sequences: // Essentially, generic linkedlists
         case _ => Nil()
         
     def getCoursesFilterWithMap(p: Sequence[Person]): Sequence[String] =
-        val prof = filter(p)(_ match
+        val prof = Sequence.filter(p)(_ match
             case Person.Teacher(_,_) => true
             case _ => false
         )
-        map(prof)(v => v match 
+        Sequence.map(prof)(v => v match 
             case Person.Teacher(n,c) => c
         )
 
@@ -98,16 +79,26 @@ object Sequences: // Essentially, generic linkedlists
     def foldRight[A, B](l: Sequence[A])(acc: B)(f: (A, B) => B): B = l match
       case Cons(h, t) => f(h, foldRight(t)(acc)(f))
       case _ => acc
+
+    // TASK 5
+    // NON PRESENTE
     
-    
-@main def trySequences =
-  import Sequences.* 
-  val l = Sequence.Cons(10, Sequence.Cons(20, Sequence.Cons(30, Sequence.Nil())))
-  println(Sequence.sum(l)) // 30
+    // TASK 6
+    // def takeWhile[A](stream: Stream[A])(pred: A => Boolean): Stream[A] = stream match
+    //   case Cons(head, tail) if pred(head()) => cons(head(), takeWhile(tail())(pred))
+    //   case _ => empty()
 
-  import Sequence.*
+    def takeWhile2[A](s: Stream[A])(n: Int)(pred: A => Boolean): Stream[A] = 
+      Streams.Stream.take(Streams.Stream.filter(s)(pred))(n)
 
-  println(sum(map(filter(l)(_ >= 20))(_ + 1))) // 21+31 = 52
-
-  println("foldLeft(l)(0)(_ + _) = " + foldLeft(l)(0)(_ + _))
-  println("foldLeft(l)(0)(_ - _) = " + foldLeft(l)(0)(_ - _))
+    // // TASK 7
+    def fill[A](n: Int)(v: A): Stream[A] = n match
+      case _ if n > 0 => cons(v, fill(n-1)(v))
+      case _ => empty()
+      
+    // TASK 8
+    def pell(): Stream[Int] = 
+      def _pell(n1: Int, n2: Int): Stream[Int] = 
+        val x = 2*n1 + n2  
+        cons(x,_pell(x, n1))
+      cons(0, cons(1,  _pell(1,0)))
